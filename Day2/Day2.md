@@ -434,7 +434,7 @@ public class Shop {
 
 ```java
 import java.util.Scanner;
-public class Shop03 {
+public class Shop05 {
 	public static void main(String[] args) {
 		Scanner input = new Scanner(System.in);
 		//商品信息
@@ -453,7 +453,7 @@ public class Shop03 {
 		int[] id=new int[10];//清单编号
 		int[] goodid=new int[10];//商品编号
 		String[] goodname=new String[10];//商品名称
-		//int[] userid=new int[10];//用户编号
+		int[] goodpri=new int[10];//商品单价
 		int[] num=new int[10];//商品数量
 		int[] sum=new int[10];//小计
 
@@ -515,21 +515,23 @@ public class Shop03 {
 		int allsum =0;//总计
 		int loc = 0;//记录当前是哪个账户登录
 		String an = "n";//记录是否登录
-		char tag = 'z';//记录是否返回主界面
 		while (true) {//主界面
 			System.out.println("------------------------------------------------------------");
-			System.out.println("                        商城                                        ");
+			System.out.println("                              商城                          ");
 			System.out.println("------------------------------------------------------------");
 			System.out.println("商品类型:");
 			System.out.println("                            1.电器");
 			System.out.println("                            2.水果");
 			System.out.println("                            3.服饰");
-			System.out.println("                            0.退出");
+			System.out.println("11.购物清单");
+			System.out.println("0 .退出商城");
 			System.out.println("------------------------------------------------------------");
 			System.out.print("请选择:");
 			int select = input.nextInt();
 			if (select == 1) {//电器界面
+				char tag = 'z';//记录是否返回主界面
 				while (true) {
+					System.out.println("------------------------------------------------------------");
 					System.out.println("编号\t名称\t\t原产地\t存库\t单价");
 					for (int i = 0; i < goodsnum; i++) {
 						if (type[i].equals("电器")) {
@@ -540,14 +542,18 @@ public class Shop03 {
 							System.out.print(price[i]+"\n");
 						}
 					}
+					System.out.println("0.返回主界面");
 					System.out.println();
 					System.out.print("请选择:");
-					select = input.nextInt();
+					int select2 = input.nextInt();
+					if (select2 == 0){
+						break;
+					}
 					if(!an.equals("y")) {
 						System.out.println("您还没有登录，请登录或注册先!");
 					}
 					while (!an.equals("y")) {//登录注册
-						System.out.println("---------------------------------------------------------");
+						System.out.println("------------------------------------------------------------");
 						System.out.println("                               1.登录");
 						System.out.println("                               2.注册");
 						System.out.print("请选择:");
@@ -555,7 +561,7 @@ public class Shop03 {
 						if (choose == 1) {//登录
 							String loguname;
 							String logpassword;
-							System.out.print("请输入账号:");
+							System.out.print("请输入用户名:");
 							loguname = input.next();
 							int i = 0;
 							while (i<usernum) {
@@ -569,12 +575,13 @@ public class Shop03 {
 								System.out.println("账号不存在，请重新登录/注册");
 								continue;
 							}
-							System.out.print("请输入密码:");
+							System.out.print("请输入密  码:");
 							logpassword = input.next();
 							if (!logpassword.equals(password[loc])) {
 								System.out.println("密码错误，请重新登录/注册");
 								continue;
 							}
+							System.out.println("登录成功，欢迎回来！");
 							an="y";//已登录
 							break;
 						} else if (choose == 2) {//注册
@@ -583,7 +590,7 @@ public class Shop03 {
 							String newpassword;
 							int newmoney;
 							boolean a = true;
-							System.out.print("请输入账号:");
+							System.out.print("请输入用户名:");
 							newuname = input.next();
 							for (int i = 0; i<usernum; i++) {
 								if (newuname.equals(uname[i])) {
@@ -595,7 +602,7 @@ public class Shop03 {
 							if (a == false) {
 								continue;
 							}
-							System.out.print("请输入密码:");
+							System.out.print("请输入密  码:");
 							newpassword = input.next();
 							if (newpassword.length() < 6) {
 								System.out.println("密码长度过短，请重新登录/注册");
@@ -612,31 +619,48 @@ public class Shop03 {
 							password[usernum] = newpassword;
 							money[usernum] = newmoney;
 							usernum++;
+							System.out.println("注册成功，欢迎加入！");
 						} else {
 							System.out.println("输入错误，请重新输入");
 							continue;
 						}
 					}
-					if (select>0 && select<=goodsnum) {
-						int pos = select-1;
+					if (select2>0 && select2<=goodsnum) {
+						int pos = select2-1;
+						if (!type[pos].equals("电器")) {//在电器界面，输入了其他商品的编号
+							System.out.println("输入商品编号错误，请重新输入2!");
+							continue;//重新输入
+						}
 						System.out.print("请输入购买数量:");
 						while (true) {
 							int buynum = input.nextInt();
 							if (buynum <= number[pos]) {//购买数量小于库存
 								number[pos] = number[pos]-buynum;
 								//买完东西，加入购物清单
-								id[listnum] = listnum+1;
-								goodid[listnum] = gid[pos];
-								goodname[listnum] = game[pos];
-								num[listnum] = buynum;
-								sum[listnum] = buynum*price[pos];
-								listnum++;
+								int i = 0;
+								while (i<listnum) {//在原有数据中添加
+									if (gid[pos] == goodid[i]) {
+										num[i] += buynum;
+										sum[i] += buynum*price[pos];
+										break;
+									}
+									i++;
+								}
+								if (i == listnum) {//新数据
+									id[listnum] = listnum+1;
+									goodid[listnum] = gid[pos];
+									goodname[listnum] = game[pos];
+									num[listnum] = buynum;
+									goodpri[listnum] = price[pos];
+									sum[listnum] = buynum*price[pos];
+									listnum++;
+								}
 								//继续购物
 								System.out.println("请问要继续购买电器吗? y/n");
 								char c = input.next().charAt(0);
 								if (c == 'y') {//跳转到电器界面
 									break;
-								} else {//
+								} else if (c == 'n') {
 									System.out.println("请问要继续购物吗? y/n");
 									tag = input.next().charAt(0);
 									break;
@@ -657,12 +681,15 @@ public class Shop03 {
 					}
 				}
 				if (tag == 'n') {
+					System.out.println("------------------------------------------------------------");
+					allsum = 0;
 					System.out.println("您的购物清单如下");
-					System.out.println("编号\t名称\t\t数量\t小计");
+					System.out.println("编号\t名称\t\t数量\t单价\t小计");
 					for (int i = 0; i < listnum; i++) {
 							System.out.print(id[i]+"\t");
 							System.out.print(goodname[i]+"\t");
 							System.out.print(num[i]+"\t");
+							System.out.print(goodpri[i]+"\t");
 							System.out.print(sum[i]+"\n");
 							allsum = allsum+sum[i];
 					}
@@ -673,9 +700,17 @@ public class Shop03 {
 					char check = input.next().charAt(0);
 					if (check == 'y') {//结账
 						if (money[loc] >= allsum) {
-							System.out.println("购买成功，欢迎再次光临！");
+							money[loc] -= allsum;
+							System.out.println("购买成功，本次消费共计"+allsum+"，您的余额是"+money[loc]+"!");
+							listnum = 0;//购物清单清空
 						} else {
 							System.out.println("您的余额不足，请充值！");
+							System.out.print("请输入充值金额：");
+							int mon = input.nextInt();
+							money[loc] += mon;
+							System.out.println("充值成功！");
+							//money[loc] -= allsum;
+							//System.out.println("购买成功，本次消费共计"+allsum+"，您的余额是"+money[loc]+"!");
 						}
 						continue;
 					} else {
@@ -684,7 +719,9 @@ public class Shop03 {
 					}
 				}
 			} else if (select == 2) {//水果界面
+				char tag = 'z';//记录是否返回主界面
 				while (true) {
+					System.out.println("------------------------------------------------------------");
 					System.out.println("编号\t名称\t\t原产地\t存库\t单价");
 					for (int i = 0; i < goodsnum; i++) {
 						if (type[i].equals("水果")) {
@@ -695,14 +732,18 @@ public class Shop03 {
 							System.out.print(price[i]+"\n");
 						}
 					}
+					System.out.println("0.返回主界面");
 					System.out.println();
 					System.out.print("请选择:");
-					select = input.nextInt();
+					int select2 = input.nextInt();
+					if (select2 == 0){
+						break;
+					}
 					if(!an.equals("y")) {
 						System.out.println("您还没有登录，请登录或注册先!");
 					}
 					while (!an.equals("y")) {//登录注册
-						System.out.println("---------------------------------------------------------");
+						System.out.println("------------------------------------------------------------");
 						System.out.println("                               1.登录");
 						System.out.println("                               2.注册");
 						System.out.print("请选择:");
@@ -710,7 +751,7 @@ public class Shop03 {
 						if (choose == 1) {//登录
 							String loguname;
 							String logpassword;
-							System.out.print("请输入账号:");
+							System.out.print("请输入用户名:");
 							loguname = input.next();
 							int i = 0;
 							while (i<usernum) {
@@ -724,12 +765,13 @@ public class Shop03 {
 								System.out.println("账号不存在，请重新登录/注册");
 								continue;
 							}
-							System.out.print("请输入密码:");
+							System.out.print("请输入密  码:");
 							logpassword = input.next();
 							if (!logpassword.equals(password[loc])) {
 								System.out.println("密码错误，请重新登录/注册");
 								continue;
 							}
+							System.out.println("登录成功，欢迎回来！");
 							an="y";//已登录
 							break;
 						} else if (choose == 2) {//注册
@@ -738,7 +780,7 @@ public class Shop03 {
 							String newpassword;
 							int newmoney;
 							boolean a = true;
-							System.out.print("请输入账号:");
+							System.out.print("请输入用户名:");
 							newuname = input.next();
 							for (int i = 0; i<usernum; i++) {
 								if (newuname.equals(uname[i])) {
@@ -750,7 +792,7 @@ public class Shop03 {
 							if (a == false) {
 								continue;
 							}
-							System.out.print("请输入密码:");
+							System.out.print("请输入密  码:");
 							newpassword = input.next();
 							if (newpassword.length() < 6) {
 								System.out.println("密码长度过短，请重新登录/注册");
@@ -767,31 +809,48 @@ public class Shop03 {
 							password[usernum] = newpassword;
 							money[usernum] = newmoney;
 							usernum++;
+							System.out.println("注册成功，欢迎加入！");
 						} else {
 							System.out.println("输入错误，请重新输入");
 							continue;
 						}
 					}
-					if (select>0 && select<=goodsnum) {
-						int pos = select-1;
+					if (select2>0 && select2<=goodsnum) {
+						int pos = select2-1;
+						if (!type[int pos = select2-1;].equals("水果")) {//在水果界面，输入了其他商品的编号
+							System.out.println("输入商品编号错误，请重新输入!");
+							continue;//重新输入
+						}
 						System.out.print("请输入购买数量:");
 						while (true) {
 							int buynum = input.nextInt();
 							if (buynum <= number[pos]) {//购买数量小于库存
 								number[pos] = number[pos]-buynum;
 								//买完东西，加入购物清单
-								id[listnum] = listnum+1;
-								goodid[listnum] = gid[pos];
-								goodname[listnum] = game[pos];
-								num[listnum] = buynum;
-								sum[listnum] = buynum*price[pos];
-								listnum++;
+								int i = 0;
+								while (i<listnum) {//在原有数据中添加
+									if (gid[pos] == goodid[i]) {
+										num[i] += buynum;
+										sum[i] += buynum*price[pos];
+										break;
+									}
+									i++;
+								}
+								if (i == listnum) {//新数据
+									id[listnum] = listnum+1;
+									goodid[listnum] = gid[pos];
+									goodname[listnum] = game[pos];
+									num[listnum] = buynum;
+									goodpri[listnum] = price[pos];
+									sum[listnum] = buynum*price[pos];
+									listnum++;
+								}
 								//继续购物
 								System.out.println("请问要继续购买水果吗? y/n");
 								char c = input.next().charAt(0);
 								if (c == 'y') {//跳转到水果界面
 									break;
-								} else {//
+								} else if (c == 'n') {
 									System.out.println("请问要继续购物吗? y/n");
 									tag = input.next().charAt(0);
 									break;
@@ -812,6 +871,8 @@ public class Shop03 {
 					}
 				}
 				if (tag == 'n') {
+					System.out.println("------------------------------------------------------------");
+					allsum = 0;
 					System.out.println("您的购物清单如下");
 					System.out.println("编号\t名称\t\t数量\t小计");
 					for (int i = 0; i < listnum; i++) {
@@ -828,9 +889,15 @@ public class Shop03 {
 					char check = input.next().charAt(0);
 					if (check == 'y') {//结账
 						if (money[loc] >= allsum) {
-							System.out.println("购买成功，欢迎再次光临！");
+							money[loc] -= allsum;
+							System.out.println("购买成功，本次消费共计"+allsum+"，您的余额是"+money[loc]+"!");
+							listnum = 0;//购物清单清空
 						} else {
 							System.out.println("您的余额不足，请充值！");
+							System.out.print("请输入充值金额：");
+							int mon = input.nextInt();
+							money[loc] += mon;
+							System.out.println("充值成功！");
 						}
 						continue;
 					} else {
@@ -839,7 +906,9 @@ public class Shop03 {
 					}
 				}
 			} else if (select == 3) {//服饰界面
+				char tag = 'z';//记录是否返回主界面
 				while (true) {
+					System.out.println("------------------------------------------------------------");
 					System.out.println("编号\t名称\t\t原产地\t存库\t单价");
 					for (int i = 0; i < goodsnum; i++) {
 						if (type[i].equals("服饰")) {
@@ -850,14 +919,18 @@ public class Shop03 {
 							System.out.print(price[i]+"\n");
 						}
 					}
+					System.out.println("0.返回主界面");
 					System.out.println();
 					System.out.print("请选择:");
-					select = input.nextInt();
+					int select2 = input.nextInt();
+					if (select2 == 0){
+						break;
+					}
 					if(!an.equals("y")) {
 						System.out.println("您还没有登录，请登录或注册先!");
 					}
 					while (!an.equals("y")) {//登录注册
-						System.out.println("---------------------------------------------------------");
+						System.out.println("------------------------------------------------------------");
 						System.out.println("                               1.登录");
 						System.out.println("                               2.注册");
 						System.out.print("请选择:");
@@ -865,7 +938,7 @@ public class Shop03 {
 						if (choose == 1) {//登录
 							String loguname;
 							String logpassword;
-							System.out.print("请输入账号:");
+							System.out.print("请输入用户名:");
 							loguname = input.next();
 							int i = 0;
 							while (i<usernum) {
@@ -879,12 +952,13 @@ public class Shop03 {
 								System.out.println("账号不存在，请重新登录/注册");
 								continue;
 							}
-							System.out.print("请输入密码:");
+							System.out.print("请输入密  码:");
 							logpassword = input.next();
 							if (!logpassword.equals(password[loc])) {
 								System.out.println("密码错误，请重新登录/注册");
 								continue;
 							}
+							System.out.println("登录成功，欢迎回来！");
 							an="y";//已登录
 							break;
 						} else if (choose == 2) {//注册
@@ -893,7 +967,7 @@ public class Shop03 {
 							String newpassword;
 							int newmoney;
 							boolean a = true;
-							System.out.print("请输入账号:");
+							System.out.print("请输入用户名:");
 							newuname = input.next();
 							for (int i = 0; i<usernum; i++) {
 								if (newuname.equals(uname[i])) {
@@ -905,7 +979,7 @@ public class Shop03 {
 							if (a == false) {
 								continue;
 							}
-							System.out.print("请输入密码:");
+							System.out.print("请输入密  码:");
 							newpassword = input.next();
 							if (newpassword.length() < 6) {
 								System.out.println("密码长度过短，请重新登录/注册");
@@ -922,31 +996,49 @@ public class Shop03 {
 							password[usernum] = newpassword;
 							money[usernum] = newmoney;
 							usernum++;
+							System.out.println("注册成功，欢迎加入！");
 						} else {
 							System.out.println("输入错误，请重新输入");
 							continue;
 						}
 					}
-					if (select>0 && select<=goodsnum) {
-						int pos = select-1;
+					if (select2>0 && select2<=goodsnum) {
+						int pos = select2-1;
+						if (!type[pos].equals("服饰")) {//在服饰界面，输入了其他商品的编号
+							System.out.println("输入商品编号错误，请重新输入!");
+							continue;//重新输入
+						}
+						
 						System.out.print("请输入购买数量:");
 						while (true) {
 							int buynum = input.nextInt();
 							if (buynum <= number[pos]) {//购买数量小于库存
 								number[pos] = number[pos]-buynum;
 								//买完东西，加入购物清单
-								id[listnum] = listnum+1;
-								goodid[listnum] = gid[pos];
-								goodname[listnum] = game[pos];
-								num[listnum] = buynum;
-								sum[listnum] = buynum*price[pos];
-								listnum++;
+								int i = 0;
+								while (i<listnum) {//在原有数据中添加
+									if (gid[pos] == goodid[i]) {
+										num[i] += buynum;
+										sum[i] += buynum*price[pos];
+										break;
+									}
+									i++;
+								}
+								if (i == listnum) {//新数据
+									id[listnum] = listnum+1;
+									goodid[listnum] = gid[pos];
+									goodname[listnum] = game[pos];
+									num[listnum] = buynum;
+									goodpri[listnum] = price[pos];
+									sum[listnum] = buynum*price[pos];
+									listnum++;
+								}
 								//继续购物
 								System.out.println("请问要继续购买服饰吗? y/n");
 								char c = input.next().charAt(0);
 								if (c == 'y') {//跳转到服饰界面
 									break;
-								} else {//
+								} else if (c == 'n') {
 									System.out.println("请问要继续购物吗? y/n");
 									tag = input.next().charAt(0);
 									break;
@@ -960,13 +1052,15 @@ public class Shop03 {
 						System.out.println("输入商品编号错误，请重新输入!");
 						continue;
 					}
-					if (tag == 'y') {//跳转到主界面
+					if (tag == 'y') {//跳转到主界面，除'n'都回到主界面
 						break;
 					} else if (tag == 'n') {
 						break;
 					}
 				}
 				if (tag == 'n') {
+					System.out.println("------------------------------------------------------------");
+					allsum = 0;
 					System.out.println("您的购物清单如下");
 					System.out.println("编号\t名称\t\t数量\t小计");
 					for (int i = 0; i < listnum; i++) {
@@ -983,9 +1077,15 @@ public class Shop03 {
 					char check = input.next().charAt(0);
 					if (check == 'y') {//结账
 						if (money[loc] >= allsum) {
-							System.out.println("购买成功，欢迎再次光临！");
+							money[loc] -= allsum;
+							System.out.println("购买成功，本次消费共计"+allsum+"，您的余额是"+money[loc]+"!");
+							listnum = 0;//购物清单清空
 						} else {
 							System.out.println("您的余额不足，请充值！");
+							System.out.print("请输入充值金额：");
+							int mon = input.nextInt();
+							money[loc] += mon;
+							System.out.println("充值成功！");
 						}
 						continue;
 					} else {
@@ -995,6 +1095,40 @@ public class Shop03 {
 				}
 			} else if (select == 0) {//退出
 				break;
+			} else if (select == 11) {//购物清单
+				System.out.println("------------------------------------------------------------");
+				allsum = 0;
+				System.out.println("您的购物清单如下");
+				System.out.println("编号\t名称\t\t数量\t小计");
+				for (int i = 0; i < listnum; i++) {
+						System.out.print(id[i]+"\t");
+						System.out.print(goodname[i]+"\t");
+						System.out.print(num[i]+"\t");
+						System.out.print(sum[i]+"\n");
+						allsum = allsum+sum[i];
+				}
+				System.out.println();
+				System.out.println("总计:"+allsum);
+				System.out.println("您现在的余额是"+money[loc]);
+				System.out.println("请问现在结账吗？y/n");
+				char check = input.next().charAt(0);
+				if (check == 'y') {//结账
+					if (money[loc] >= allsum) {
+						money[loc] -= allsum;
+						System.out.println("购买成功，本次消费共计"+allsum+"，您的余额是"+money[loc]+"!");
+						listnum = 0;//购物清单清空
+					} else {
+						System.out.println("您的余额不足，请充值！");
+						System.out.print("请输入充值金额：");
+						int mon = input.nextInt();
+						money[loc] += mon;
+						System.out.println("充值成功！");
+					}
+					continue;
+				} else {
+					System.out.println("那您继续逛逛呗！");
+					continue;
+				}
 			} else {
 				System.out.println("输入错误，无该类型商品，请重新输入!");
 				continue;

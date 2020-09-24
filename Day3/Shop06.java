@@ -1,15 +1,10 @@
 /*
-*	版    本：05
-*	增加功能：主界面增加结账功能，
-			  增加充值功能，
-			  增加子菜单返回主界面功能
-*	解决 bug：消费没有更改账户余额bug，
-			  因为tag导致选择继续购物时跳到购物清单bug，
-			  付款后购物清单没有清空bug
-			  在服饰界面，输入了其他商品的编号也能够购买的bug
+*	版    本：06
+*	增加功能：
+*	解决 bug：购买0个物品的bug
 */
 import java.util.Scanner;
-public class Shop05 {
+public class Shop06 {
 	public static void main(String[] args) {
 		Scanner input = new Scanner(System.in);
 		//商品信息
@@ -209,7 +204,7 @@ public class Shop05 {
 						System.out.print("请输入购买数量:");
 						while (true) {
 							int buynum = input.nextInt();
-							if (buynum <= number[pos]) {//购买数量小于库存
+							if (buynum > 0 && buynum <= number[pos]) {//购买数量小于库存
 								number[pos] = number[pos]-buynum;
 								//买完东西，加入购物清单
 								int i = 0;
@@ -241,8 +236,8 @@ public class Shop05 {
 									break;
 								}
 							} else if (buynum == 0) {//买0个
-								continue;
-							}else {
+								break;
+							} else {
 								System.out.println("现有"+number[pos]+"个"+goodname[pos]);
 								System.out.println("库存不足，请重新输入:");
 								continue;
@@ -395,14 +390,14 @@ public class Shop05 {
 					}
 					if (select2>0 && select2<=goodsnum) {
 						int pos = select2-1;
-						if (!type[int pos = select2-1;].equals("水果")) {//在水果界面，输入了其他商品的编号
+						if (!type[pos].equals("水果")) {//在水果界面，输入了其他商品的编号
 							System.out.println("输入商品编号错误，请重新输入!");
 							continue;//重新输入
 						}
 						System.out.print("请输入购买数量:");
 						while (true) {
 							int buynum = input.nextInt();
-							if (buynum <= number[pos]) {//购买数量小于库存
+							if (buynum > 0 && buynum <= number[pos]) {//购买数量小于库存
 								number[pos] = number[pos]-buynum;
 								//买完东西，加入购物清单
 								int i = 0;
@@ -433,7 +428,10 @@ public class Shop05 {
 									tag = input.next().charAt(0);
 									break;
 								}
+							} else if (buynum == 0) {//买0个
+								break;
 							} else {
+								System.out.println("现有"+number[pos]+"个"+goodname[pos]);
 								System.out.println("库存不足，请重新输入:");
 								continue;
 							}
@@ -590,7 +588,7 @@ public class Shop05 {
 						System.out.print("请输入购买数量:");
 						while (true) {
 							int buynum = input.nextInt();
-							if (buynum <= number[pos]) {//购买数量小于库存
+							if (buynum > 0 && buynum <= number[pos]) {//购买数量小于库存
 								number[pos] = number[pos]-buynum;
 								//买完东西，加入购物清单
 								int i = 0;
@@ -621,7 +619,10 @@ public class Shop05 {
 									tag = input.next().charAt(0);
 									break;
 								}
+							} else if (buynum == 0) {//买0个
+								break;
 							} else {
+								System.out.println("现有"+number[pos]+"个"+goodname[pos]);
 								System.out.println("库存不足，请重新输入:");
 								continue;
 							}
