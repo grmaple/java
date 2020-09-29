@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="老师/Day0929/src"/>
+	<classpathentry kind="src" path="MyConnet/src"/>
+	<classpathentry kind="lib" path="老师/Day0929/lib/mysql-connector-java-5.1.7-bin.jar"/>
+	<classpathentry kind="lib" path="mysql-connector-java-8.0.16.jar"/>
+	<classpathentry kind="output" path="MyConnet/bin"/>
+</classpath>
